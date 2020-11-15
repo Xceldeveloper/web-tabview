@@ -1,0 +1,330 @@
+<!-- 
+  By Emiator Overcomer (xceldeveloper)
+  1/04/2020
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab View | Designed by Xceldeveloper</title>
+
+
+  <style>
+    :root {
+      --main-bg-color: whitesmoke;
+      --accent-color: teal;
+    }
+
+    body {
+      background-color: var(--main-bg-color);
+      margin: 0px;
+      font-family: sans-serif;
+      padding: 0px;
+      font-size: 16px;
+    }
+
+    #action-bar {
+      --action-bar-height: 10px;
+      width: 100%;
+      height: var(--action-bar-height);
+      background-color: var(--accent-color);
+      box-shadow: 1px 3px 3px grey;
+      position: fixed;
+      top: 0px;
+      transition: all ease-in 0.09s;
+    }
+
+    #breaker {
+      width: 100%;
+      height: 1px;
+      background-color: blue;
+    }
+
+    #first-segment,
+    #second-segment {
+      --custom-width: 0px;
+      height: 50px;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    #first-segment button,
+    #second-segment button {
+      height: 50px;
+      margin: none;
+      padding: none;
+      background-color: inherit;
+      border: none;
+      color: white;
+      outline-style: none;
+      display: block;
+
+    }
+
+    #second-segment button {
+      width: var(--custom-width);
+      height: 50px;
+      float: left;
+
+    }
+
+    .scrollp {
+      height: 2px;
+      width: 100%;
+      background-color: var(--accent-color);
+      position: absolute;
+      bottom: 0px;
+      box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+
+    }
+
+    #scrollmv {
+      --custom-width: 0px;
+      background-color: var(--main-bg-color);
+      width: var(--custom-width);
+      height: 100%;
+      position: relative;
+      left: 0px;
+      transition: all 0.1s linear;
+    }
+
+
+    #tab-wrapper {
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+      border: 1px solid blue;
+
+    }
+
+    #tabs-container {
+      --n: 1;
+      width: 100%;
+      width: calc(var(--n)*100%);
+      height: 100%;
+      overflow: hidden;
+      padding: 0px;
+      margin: 0px;
+      white-space: nowrap;
+    }
+
+    .tab {
+      width: auto;
+      height: 100%;
+      width: calc(100%/var(--n));
+      overflow: auto;
+      display: inline-block;
+      padding-bottom: 100px;
+
+
+    }
+
+
+    .tab div:first-child,
+    .tab span:first-child,
+    .tab img:first-child {
+      margin-top: 100px;
+    }
+
+    .box {
+      width: 80%;
+      height: 70vh;
+      margin: auto;
+      background-color: red;
+      border: 1px solid yellow;
+      margin-bottom: 20px;
+    }
+
+    #tab-title{
+      color:white;
+      padding: 15px;
+      font-size: 17px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="action-bar">
+    <div id="first-segment">
+         <!-- this cant be empty add at leat a name or Logo -->
+      <div id="tab-title">Tab View</div>
+    </div>
+    <div id="second-segment">
+         <!-- make sure scrollx(index of element starting from 0,true) is added in all nav buttons -->
+      <button onclick="scrollx(0,true)">Chats</button>
+      <button onclick="scrollx(1,true)">Status</button>
+      <button onclick="scrollx(2,true)">Calls</button>
+    </div>
+    <div class="scrollp">
+      <div id="scrollmv">
+      </div>
+    </div>
+  </div>
+  <div id="tab-wrapper">
+    <div id="tabs-container">
+         <!-- make sure scrolling(this) is added in all tabs -->
+      <div class="tab" onscroll="scrolling(this)">
+        <div class="box"> chats</div>
+        <div class="box">2</div>
+
+      </div>
+      <div class="tab" onscroll="scrolling(this)">
+
+        <div class="box"> status</div>
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+
+      </div>
+      <div class="tab" onscroll="scrolling(this)">
+
+        <div class="box"> calls</div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="jquery-3.2.1.min.js"></script>
+  <script>
+    var screenWidth, screenHeight, divideWidth, activeIndex = 0,
+      tabLength = 0;
+    var actionBar = document.getElementById("action-bar"),
+      firstSeg = document.getElementById("first-segment"),
+      seconSeg = document.getElementById("second-segment"),
+      activeIndicator = document.getElementById("scrollmv"),
+      navBtnContainer = document.getElementById("second-segment"),
+      tabContainer = document.getElementById("tabs-container");
+      tab = document.querySelector('.tab');
+
+     window.addEventListener('load', initViews, false);
+     window.addEventListener("orientationchange", initViews, false);
+
+
+    var f, s;
+    function initViews() {
+      screenWidth = window.innerWidth,
+      screenHeight = window.innerHeight;
+
+      tabLength = navBtnContainer.childElementCount;
+      divideWidth = 100 / tabLength;
+      f = firstSeg.childElementCount,
+      s = seconSeg.childElementCount,
+      newHeight = 0;
+      f = firstSeg.childElementCount == 0 ? 0 : 50;
+      s = seconSeg.childElementCount == 0 ? 0 : 50;
+      //geting height of aaction bar rom the twwo buttons layer
+      newHeight = f + s + "px";
+     //set the action bar height dynamically
+      actionBar.style.setProperty('--action-bar-height', newHeight);
+      //set the nav button width dynamically according to number of tabs
+      seconSeg.style.setProperty('--custom-width', divideWidth + '%');
+      activeIndicator.style.width = divideWidth + '%';
+      tabContainer.style.setProperty('--n', tabLength);
+
+      scrollx(activeIndex, false)
+    };
+
+    //scroll indicator and tab
+    function scrollx(index, isClicked) {
+      var mov = index * divideWidth;
+      activeIndicator.style.left = mov + "%";
+      activeIndex = index;
+
+      if (isClicked) {
+        actionBar.style.top = "0px"
+        console.log("clicked")
+      }
+
+      //scroll selected tabinto view
+      var bb = document.getElementsByClassName('tab');
+      bb[index].scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+    }
+
+    function scrolling(e) {
+      var isTabScrolling;
+      var firstElement = e.children[0];
+      var pos = getPos(firstElement, e).top;
+      if (pos < 50) {
+      //up
+        actionBar.style.top = "-50px"
+      } else {
+        //down
+        actionBar.style.top = "0px"
+      }
+      clearTimeout(isTabScrolling);
+      wrapper.removeEventListener("scroll", sc, false);
+
+      e.addEventListener("touchend", function () {
+     
+        isTabScrolling = setTimeout(function () {
+          wrapper.addEventListener("scroll", sc, false);
+      
+        }, 500);
+      }, false);
+
+    }
+
+
+    function getPos(el, parent = "") {
+      var viewportOffset = el.getBoundingClientRect();
+      var elHeight = el.clientHeight;
+      var elWidth = el.clientWidth
+      // these are relative to the viewport, i.e. the window
+      var top = viewportOffset.top;
+      var left = viewportOffset.left;
+      if (parent == "") {
+        return {
+          top: top,
+          left: left,
+          right: elWidth - left,
+          bottom: elHeight - top
+        }
+      } else {
+        return {
+          top: top - parent.getBoundingClientRect().top,
+          left: left - parent.getBoundingClientRect().left,
+          right: (elWidth - left) - parent.clientWidth - parent.getBoundingClientRect().left,
+          bottom: (elHeight - top) - parent.clientHeight - parent.getBoundingClientRect().top,
+          awayLeft: parent.getBoundingClientRect().left - left
+        }
+      }
+    }
+
+
+  
+    var wrapper = document.getElementById("tab-wrapper");
+    wrapper.addEventListener('scroll', sc, false);
+    function sc(e) {
+      var isScrolling;
+      var pWidth = wrapper.clientWidth;
+      var calc = pWidth;
+      var p = getPos(tabContainer, wrapper).awayLeft / calc;
+      var mm = p / tabLength * 100;
+      activeIndicator.style.left = mm + "%";
+
+      window.clearTimeout(isScrolling);
+      wrapper.addEventListener("touchend", function () {
+    
+        isScrolling = setTimeout(function () {
+      //scrolling stop
+          scrollx(Math.round(p.toFixed(1)), true);
+
+        }, 10);
+      }, false)
+
+    }
+  </script>
+</body>
+
+</html>
